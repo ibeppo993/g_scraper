@@ -8,6 +8,7 @@ import time
 create_necessary_folder()
 create_db_proxy()
 create_db_keywords()
+remaining_keyword_n = get_remaining_keywords()
 proxy_user = 'ibeppo993'
 proxy_pass = 'Ta802Ta802'
 domain = 'www.google.it'
@@ -31,27 +32,26 @@ options_seleniumWire = {
     'proxy': {'https': f'https://{proxy_user}:{proxy_pass}@{proxy}',},
 }
 
-
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options = option, seleniumwire_options = options_seleniumWire)
 
 # Go to the Google home page
 url = get_url_to_scrape(keyword, domain, uule, hl, gl)
 #url = 'https://www.ilmioip.it/'
 driver.get(url)
-time.sleep(5)
+time.sleep(0.5)
 
-
-# Access requests via the `requests` attribute
 for request in driver.requests:
     str_request = str(request)
-    #print(str_request)
     #print(type(str_request))
     if str_request == url:
-        print(
-           request.url,
-           request.response.status_code,
-           request.response.headers['Content-Type']
-        )
+        if request.response.status_code == 200:
+            print(request.url)
+            print(request.response.status_code)
+            print(request.response.headers['Content-Type'])
+        else:
+            print('------------ richiesta captcha')
+            rehab_keyword(keyword)
+            postpone_proxy(proxy)
 
 HTML_DOM = driver.execute_script("return document.documentElement.outerHTML")
 
