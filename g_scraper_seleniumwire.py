@@ -2,7 +2,7 @@ from seleniumwire import webdriver  # Import from seleniumwire
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from seleniumwire.undetected_chromedriver.v2 import Chrome, ChromeOptions
+#from seleniumwire.undetected_chromedriver.v2 import Chrome, ChromeOptions
 from initialize import *
 import time, json
 
@@ -69,7 +69,6 @@ while remaining_keyword_n > 0:
                 HTML_DOM = driver.execute_script("return document.documentElement.outerHTML")
 
                 keyword_enc = urllib.parse.quote_plus(keyword)
-                proxy_enc = urllib.parse.quote_plus(proxy)
                 
                 with open(f'html_output/{def_date_time}-{keyword_enc}.html', 'w+') as f:
                     f.write(HTML_DOM)

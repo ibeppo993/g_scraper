@@ -128,9 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-db_keyword.db
-db_proxy.db
 html_output/
 output_data/
-output.json
 z_*.py
+*.json
+*.db
