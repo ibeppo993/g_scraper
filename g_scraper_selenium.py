@@ -24,7 +24,6 @@ while remaining_keyword_n > 0:
     proxy = get_proxy()
     print(proxy)
 
-
     # Create a new instance of the Chrome driver
     option = webdriver.ChromeOptions()
     #option.add_argument("--headless")
@@ -35,8 +34,6 @@ while remaining_keyword_n > 0:
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_experimental_option('useAutomationExtension', False)
     
-    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options = option)
-    #driver = webdriver.Remote('http://vmi238431.contaboserver.net:49163/wd/hub', DesiredCapabilities.CHROME,options = option)
     driver = webdriver.Remote('http://vmi238431.contaboserver.net:49163/wd/hub',options = option)
 
     # Go to the Google home page
@@ -64,7 +61,6 @@ while remaining_keyword_n > 0:
     status_code = driver.execute_async_script(js)
     print(status_code)
 
-
     if status_code != 200:
         print('------------ richiesta captcha')
         print(status_code)
@@ -78,9 +74,7 @@ while remaining_keyword_n > 0:
         driver.close()
 
     else:
-
         HTML_DOM = driver.execute_script("return document.documentElement.outerHTML")
-
         keyword_enc = urllib.parse.quote_plus(keyword)
         proxy_enc = urllib.parse.quote_plus(proxy)
         
