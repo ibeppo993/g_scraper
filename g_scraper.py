@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from initialize import *
-import time
+import time, json
 
 create_necessary_folder()
 create_db_proxy()
@@ -26,6 +26,7 @@ option.add_experimental_option("excludeSwitches", ["enable-automation"])
 option.add_experimental_option('useAutomationExtension', False)
 
 keyword = get_keyword()
+print(keyword)
 proxy = get_proxy()
 print(proxy)
 options_seleniumWire = {
@@ -44,22 +45,36 @@ for request in driver.requests:
     str_request = str(request)
     #print(type(str_request))
     if str_request == url:
-        if request.response.status_code == 200:
-            print(request.url)
-            print(request.response.status_code)
-            print(request.response.headers['Content-Type'])
-        else:
+        if request.response.status_code != 200:
             print('------------ richiesta captcha')
             rehab_keyword(keyword)
             postpone_proxy(proxy)
 
-HTML_DOM = driver.execute_script("return document.documentElement.outerHTML")
+        else:
+            print(request.url)
+            print(request.response.status_code)
+            print(request.response.headers['Content-Type'])
 
-keyword_enc = urllib.parse.quote_plus(keyword)
-proxy_enc = urllib.parse.quote_plus(proxy)
-def_date_time = get_now_time()
-with open(f'html_output/{def_date_time}-{proxy_enc}-{keyword_enc}.html', 'w+') as f:
-    f.write(HTML_DOM)
-    f.close()
+            HTML_DOM = driver.execute_script("return document.documentElement.outerHTML")
 
-driver.close()
+            keyword_enc = urllib.parse.quote_plus(keyword)
+            proxy_enc = urllib.parse.quote_plus(proxy)
+            def_date_time = get_now_time()
+            with open(f'html_output/{def_date_time}-{proxy_enc}-{keyword_enc}.html', 'w+') as f:
+                f.write(HTML_DOM)
+                f.close()
+
+            SERP_dict = [{
+            "keyword": keyword,
+            "proxy": proxy,
+            "url": request.url,
+            "staus_code": request.response.status_code,
+            "header": request.response.headers['Content-Type']
+            }]
+            with open("output.json", "r+") as file:
+                data = json.load(file)
+                data.update(SERP_dict)
+                file.seek(0)
+                json.dump(data, file)
+
+            driver.close()

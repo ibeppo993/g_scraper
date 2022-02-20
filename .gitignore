@@ -131,3 +131,4 @@ dmypy.json
 db_keyword.db
 db_proxy.db
 html_output/
+output.json

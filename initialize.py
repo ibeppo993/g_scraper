@@ -9,6 +9,7 @@ from urllib.parse import unquote_plus
 
 
 folder_list = ['html_output']
+file_list = ['output.json']
 db_name_proxy = 'db_proxy.db'
 file_proxies = 'proxy.txt'
 db_name_keyword = 'db_keyword.db'
@@ -18,6 +19,10 @@ def create_necessary_folder():
     for folder_ in folder_list:
         if not os.path.exists(folder_):
             os.makedirs(folder_)
+    for file_ in file_list:
+        if not os.path.isfile(file_):
+            open(file_, mode='a').close()    
+    
 
 
 def create_db_proxy():
