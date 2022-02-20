@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from initialize import *
 import time, json
+import logging, logging.config
 
 create_necessary_folder()
 create_db_proxy()
@@ -17,6 +18,8 @@ hl = 'IT'
 uule = 'w+CAIQICIFSXRhbHk'
 
 while remaining_keyword_n > 0:
+    def_date_time = get_now_time()
+    logging.info(f'{def_date_time}--------- Start request')
     # Create a new instance of the Chrome driver
     option = webdriver.ChromeOptions()
     option.add_argument("--headless")
@@ -52,6 +55,8 @@ while remaining_keyword_n > 0:
                 print('------------ richiesta captcha')
                 rehab_keyword(keyword)
                 postpone_proxy(proxy)
+                def_date_time = get_now_time()
+                logging.error(f'{def_date_time}--------- Captcha request')
                 driver.close()
 
             else:
@@ -63,7 +68,7 @@ while remaining_keyword_n > 0:
 
                 keyword_enc = urllib.parse.quote_plus(keyword)
                 proxy_enc = urllib.parse.quote_plus(proxy)
-                def_date_time = get_now_time()
+                
                 with open(f'html_output/{def_date_time}-{keyword_enc}.html', 'w+') as f:
                     f.write(HTML_DOM)
                     f.close()
@@ -86,5 +91,7 @@ while remaining_keyword_n > 0:
                     df_read.to_json('output.json', orient='index')
                 else:
                     df.to_json('output.json', orient='index')
+                def_date_time = get_now_time()
+                logging.info(f'{def_date_time}--------- Finish request')
 
                 driver.close()
