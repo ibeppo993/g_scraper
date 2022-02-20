@@ -92,13 +92,13 @@ while remaining_keyword_n > 0:
 
         df = pd.DataFrame.from_dict(SERP_dict)
         print(df)
-        if os.path.isfile('output.json'):
-            df_read = pd.read_json('output.json', orient='index')
+        if os.path.isfile('remote_output.json'):
+            df_read = pd.read_json('remote_output.json', orient='index')
             df_read = pd.concat([df_read, df], ignore_index=True)
             #df_read.drop_duplicates(inplace=True)
-            df_read.to_json('output.json', orient='index')
+            df_read.to_json('remote_output.json', orient='index')
         else:
-            df.to_json('output.json', orient='index')
+            df.to_json('remote_output.json', orient='index')
         
         #log
         with open('debug.log', 'a') as f:
