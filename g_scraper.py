@@ -2,9 +2,9 @@ from seleniumwire import webdriver  # Import from seleniumwire
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from seleniumwire.undetected_chromedriver.v2 import Chrome, ChromeOptions
 from initialize import *
 import time, json
-import logging, logging.config
 
 create_necessary_folder()
 create_db_proxy()
@@ -19,7 +19,6 @@ uule = 'w+CAIQICIFSXRhbHk'
 
 while remaining_keyword_n > 0:
     def_date_time = get_now_time()
-    logging.info(f'{def_date_time}--------- Start request')
     # Create a new instance of the Chrome driver
     option = webdriver.ChromeOptions()
     option.add_argument("--headless")
@@ -55,8 +54,11 @@ while remaining_keyword_n > 0:
                 print('------------ richiesta captcha')
                 rehab_keyword(keyword)
                 postpone_proxy(proxy)
-                def_date_time = get_now_time()
-                logging.error(f'{def_date_time}--------- Captcha request')
+
+                #log
+                with open('debug.log', 'a') as f:
+                    f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Captcha;{keyword};\n")
+
                 driver.close()
 
             else:
@@ -91,7 +93,9 @@ while remaining_keyword_n > 0:
                     df_read.to_json('output.json', orient='index')
                 else:
                     df.to_json('output.json', orient='index')
-                def_date_time = get_now_time()
-                logging.info(f'{def_date_time}--------- Finish request')
+                
+                #log
+                with open('debug.log', 'a') as f:
+                    f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Completata;{keyword};\n")
 
                 driver.close()
