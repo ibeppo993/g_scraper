@@ -133,3 +133,4 @@ output_data/
 z_*.py
 *.json
 *.db
+.env
