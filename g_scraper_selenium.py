@@ -8,9 +8,9 @@ from manage_DB_MySQL import *
 import time, json
 
 create_necessary_folder()
-create_db_proxy()
-create_db_keywords()
-remaining_keyword_n = get_remaining_keywords()
+#create_db_proxy()
+#create_db_keywords()
+remaining_keyword_n = get_remaining_keywords_MySQL()
 proxy_user = 'ibeppo993'
 proxy_pass = 'Ta802Ta802'
 domain = 'www.google.it'
@@ -20,9 +20,9 @@ uule = 'w+CAIQICIFSXRhbHk'
 
 while remaining_keyword_n > 0:
     def_date_time = get_now_time()
-    keyword = get_keyword()
+    keyword = get_keyword_MySQL()
     print(keyword)
-    proxy = get_proxy()
+    proxy = get_proxy_MySQL()
     print(proxy)
 
     # Create a new instance of the Chrome driver
@@ -35,7 +35,7 @@ while remaining_keyword_n > 0:
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_experimental_option('useAutomationExtension', False)
     
-    driver = webdriver.Remote('http://vmi238431.contaboserver.net:49163/wd/hub',options = option)
+    driver = webdriver.Remote('http://144.91.112.166:49166/wd/hub',options = option)
 
     # Go to the Google home page
     url = get_url_to_scrape(keyword, domain, uule, hl, gl)
@@ -65,8 +65,8 @@ while remaining_keyword_n > 0:
     if status_code != 200:
         print('------------ richiesta captcha')
         print(status_code)
-        rehab_keyword(keyword)
-        postpone_proxy(proxy)
+        rehab_keyword_MySQL(keyword)
+        postpone_proxy_MySQL(proxy)
 
         #log
         with open('debug.log', 'a') as f:

@@ -21,7 +21,7 @@ def create_necessary_folder():
             os.makedirs(folder_)
     # for file_ in file_list:
     #     if not os.path.isfile(file_):
-    #         open(file_, mode='a').close()    
+    #         open(file_, mode='a').close()
     
 
 
