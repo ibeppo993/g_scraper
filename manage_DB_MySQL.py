@@ -7,33 +7,28 @@ from sqlalchemy import create_engine
 import pymysql
 from datetime import timedelta
 
-db_name_keyword = ''
-db_name_proxy = ''
-# db_name_proxy = 'db_proxy.db'
 file_proxies = 'proxy.txt'
-# db_name_keyword = 'db_keyword.db'
 keywords_file = 'keywords.csv'
 
-DB_NAME = 'wtf'
 hostname = 'vmi415626.contaboserver.net'
 dbname = 'wtf'
 uname = 'ibeppo993'
 pwd = 'Ta_802Ta_802'
 
 def drop_proxies_table():
-    conn = mysql.connector.connect(user='ibeppo993', 
-                                password='Ta_802Ta_802',
-                                host='vmi415626.contaboserver.net',
-                                database='wtf')
+    conn = mysql.connector.connect(user=uname, 
+                                password=pwd,
+                                host=hostname,
+                                database=dbname)
     cursor = conn.cursor()                              
     cursor.execute("DROP TABLE IF EXISTS PROXIES_LIST")
     conn.close()
 
 def drop_keywords_table():
-    conn = mysql.connector.connect(user='ibeppo993', 
-                                password='Ta_802Ta_802',
-                                host='vmi415626.contaboserver.net',
-                                database='wtf')
+    conn = mysql.connector.connect(user=uname, 
+                                password=pwd,
+                                host=hostname,
+                                database=dbname)
     cursor = conn.cursor()                              
     cursor.execute("DROP TABLE IF EXISTS KEYWORDS_LIST")
     conn.close()
@@ -56,14 +51,12 @@ def insert_keywords_data():
     dataframe['CHECKING_1'] = 0
     dataframe['CHECKING_2'] = 0
     dataframe.columns = ['KEYWORDS','CHECKING_1','CHECKING_2']
-
     df = DataFrame(dataframe, columns= ['KEYWORDS','CHECKING_1','CHECKING_2'])
     # Create SQLAlchemy engine to connect to MySQL Database
     engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
                     .format(host=hostname, db=dbname, user=uname, pw=pwd))
     # Convert dataframe to sql table                                   
     df.to_sql('KEYWORDS_LIST', engine, index=False)
-
 
 def get_proxy():
     connection = pymysql.connect(host=hostname,
@@ -72,7 +65,6 @@ def get_proxy():
                              database=dbname,
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
-    
     data = pd.read_sql_query("SELECT PROXIES FROM PROXIES_LIST WHERE TIME = ( SELECT MIN(TIME) FROM PROXIES_LIST);",connection)
     global proxy
     proxy = (data['PROXIES'].iat[0])
@@ -84,7 +76,6 @@ def get_proxy():
     connection.commit()
     connection.close()
     return proxy
-
 
 def postpone_proxy(proxy):
     connection = pymysql.connect(host=hostname,
@@ -108,7 +99,6 @@ def get_keyword():
                              database=dbname,
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
-    
     data = pd.read_sql_query("SELECT KEYWORDS FROM KEYWORDS_LIST WHERE CHECKING_1 = 0 AND CHECKING_2 = 0 LIMIT 1;",connection)
     #print(type(data['KEYWORDS'].iat[0]))
     global keyword
@@ -145,6 +135,8 @@ def get_remaining_keywords():
     remaining_keyword_n = len(remaining_keyword_list)
     connection.close()
     return remaining_keyword_n
+
+
 
 # drop_proxies_table()
 # drop_keywords_table()

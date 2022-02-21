@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from initialize import *
+from manage_DB_MySQL import *
 import time, json
 
 create_necessary_folder()
