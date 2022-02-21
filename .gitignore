@@ -131,6 +131,7 @@ dmypy.json
 html_output/
 output_data/
 z_*.py
+z_*.txt
 *.json
 *.db
 .env

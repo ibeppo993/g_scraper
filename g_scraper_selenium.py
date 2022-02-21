@@ -7,6 +7,8 @@ from initialize import *
 from manage_DB_MySQL import *
 import time, json
 
+docker_url = 'http://144.91.112.166:49200/'
+
 create_necessary_folder()
 #create_db_proxy()
 #create_db_keywords()
@@ -31,11 +33,11 @@ while remaining_keyword_n > 0:
     option.add_argument('--incognito')
     option.add_argument("--window-size=1920,1080")
     option.add_argument('--disable-blink-features=AutomationControlled')
-    #option.add_argument(f'proxy-server={proxy}')
+    option.add_argument(f'proxy-server={proxy}')
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_experimental_option('useAutomationExtension', False)
     
-    driver = webdriver.Remote('http://144.91.112.166:49166/wd/hub',options = option)
+    driver = webdriver.Remote(f'{docker_url}wd/hub',options = option)
 
     # Go to the Google home page
     url = get_url_to_scrape(keyword, domain, uule, hl, gl)
