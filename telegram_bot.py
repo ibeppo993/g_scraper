@@ -1,10 +1,12 @@
-import requests
+import requests, os
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 def telegram_bot_sendtext(bot_message):
-    
-    bot_token = '5008747919:AAFHUtlkYYO68Aa2dTZCFFGHFZB4D6kI8nA'
-    bot_chatID = '242376372'
+    bot_token = os.environ.get("bot_token")
+    bot_chatID = os.environ.get("bot_chatID")
+
     send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
     response = requests.get(send_text)
@@ -12,7 +14,6 @@ def telegram_bot_sendtext(bot_message):
     return response.json()
     
 
-# now = datetime.now()
-# def_date_time = now.strftime("%Y%m%d-%H%M%S-%fZ")
-# test = telegram_bot_sendtext(f"{now}- Richiesta captcha")
+
+# test = telegram_bot_sendtext("test")
 # print(test)

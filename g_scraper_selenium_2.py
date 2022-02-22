@@ -5,13 +5,19 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from initialize import *
 from manage_DB_MySQL import *
+from telegram_bot import *
+import undetected_chromedriver as uc
 import time, json
+from dotenv import load_dotenv
+load_dotenv()
 
-docker_url = 'http://144.91.112.166:49202/'
+docker_url = os.environ.get("docker_2")
 
 create_necessary_folder()
 #create_db_proxy()
 #create_db_keywords()
+output_json = 'output.json'
+debug_log = 'debug.log'
 remaining_keyword_n = get_remaining_keywords_MySQL()
 proxy_user = 'ibeppo993'
 proxy_pass = 'Ta802Ta802'
@@ -28,12 +34,13 @@ while remaining_keyword_n > 0:
     print(proxy)
 
     # Create a new instance of the Chrome driver
-    option = webdriver.ChromeOptions()
+    option = uc.ChromeOptions()
     #option.add_argument("--headless")
     option.add_argument('--incognito')
     option.add_argument("--window-size=1920,1080")
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_argument(f'proxy-server={proxy}')
+    option.add_argument('--no-first-run --no-service-autorun --password-store=basic')
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_experimental_option('useAutomationExtension', False)
     
@@ -43,7 +50,7 @@ while remaining_keyword_n > 0:
     url = get_url_to_scrape(keyword, domain, uule, hl, gl)
     #url = 'https://www.ilmioip.it/'
     driver.get(url)
-    time.sleep(10)
+    driver.implicitly_wait(10)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
     js = '''
@@ -69,10 +76,11 @@ while remaining_keyword_n > 0:
         print(status_code)
         rehab_keyword_MySQL(keyword)
         postpone_proxy_MySQL(proxy)
+        test = telegram_bot_sendtext(f"{def_date_time} - {proxy} - {keyword} - {docker_url} - Richiesta Captcha")
 
         #log
-        with open('debug.log', 'a') as f:
-            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Captcha;{keyword};plesk\n")
+        with open(debug_log, 'a') as f:
+            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Captcha;{keyword};{docker_url}\n")
 
         driver.close()
 
@@ -95,16 +103,16 @@ while remaining_keyword_n > 0:
 
         df = pd.DataFrame.from_dict(SERP_dict)
         print(df)
-        if os.path.isfile('remote_output.json'):
-            df_read = pd.read_json('remote_output.json', orient='index')
+        if os.path.isfile(output_json):
+            df_read = pd.read_json(output_json, orient='index')
             df_read = pd.concat([df_read, df], ignore_index=True)
             #df_read.drop_duplicates(inplace=True)
-            df_read.to_json('remote_output.json', orient='index')
+            df_read.to_json(output_json, orient='index')
         else:
-            df.to_json('remote_output.json', orient='index')
+            df.to_json(output_json, orient='index')
         
         #log
-        with open('debug.log', 'a') as f:
-            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Completata;{keyword};plesk\n")
+        with open(debug_log, 'a') as f:
+            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Completata;{keyword};{docker_url}\n")
 
         driver.quit()

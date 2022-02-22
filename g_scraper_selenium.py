@@ -8,12 +8,16 @@ from manage_DB_MySQL import *
 from telegram_bot import *
 import undetected_chromedriver as uc
 import time, json
+from dotenv import load_dotenv
+load_dotenv()
 
-docker_url = 'http://144.91.112.166:49200/'
+docker_url = os.environ.get("docker_1")
 
 create_necessary_folder()
 #create_db_proxy()
 #create_db_keywords()
+output_json = 'output.json'
+debug_log = 'debug.log'
 remaining_keyword_n = get_remaining_keywords_MySQL()
 proxy_user = 'ibeppo993'
 proxy_pass = 'Ta802Ta802'
@@ -72,11 +76,11 @@ while remaining_keyword_n > 0:
         print(status_code)
         rehab_keyword_MySQL(keyword)
         postpone_proxy_MySQL(proxy)
-        test = telegram_bot_sendtext(f"{def_date_time} - {proxy} - {keyword} - Richiesta Captcha")
+        test = telegram_bot_sendtext(f"{def_date_time} - {proxy} - {keyword} - {docker_url} - Richiesta Captcha")
 
         #log
-        with open('debug.log', 'a') as f:
-            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Captcha;{keyword};plesk\n")
+        with open(debug_log, 'a') as f:
+            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Captcha;{keyword};{docker_url}\n")
 
         driver.close()
 
@@ -99,16 +103,16 @@ while remaining_keyword_n > 0:
 
         df = pd.DataFrame.from_dict(SERP_dict)
         print(df)
-        if os.path.isfile('output.json'):
-            df_read = pd.read_json('output.json', orient='index')
+        if os.path.isfile(output_json):
+            df_read = pd.read_json(output_json, orient='index')
             df_read = pd.concat([df_read, df], ignore_index=True)
             #df_read.drop_duplicates(inplace=True)
-            df_read.to_json('output.json', orient='index')
+            df_read.to_json(output_json, orient='index')
         else:
-            df.to_json('output.json', orient='index')
+            df.to_json(output_json, orient='index')
         
         #log
-        with open('debug.log', 'a') as f:
-            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Completata;{keyword};plesk\n")
+        with open(debug_log, 'a') as f:
+            f.write(f"{proxy};"+time.strftime('%Y%m%d-%H%M%S')+f";Richiesta Completata;{keyword};{docker_url}\n")
 
         driver.quit()
