@@ -4,7 +4,7 @@ from os import path
 from pandas import DataFrame
 import mysql.connector
 from sqlalchemy import create_engine
-import pymysql
+import pymysql, urllib
 from datetime import timedelta
 
 file_proxies = 'proxy.txt'
@@ -44,7 +44,7 @@ def insert_proxies_data_MySQL():
     engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
                     .format(host=hostname, db=dbname, user=uname, pw=pwd))
     # Convert dataframe to sql table                                   
-    df.to_sql('PROXIES_LIST', engine, index=False)
+    df.to_sql('PROXIES_LIST', engine, index=True)
 
 def insert_keywords_data_MySQL():
     dataframe = pd.read_csv(keywords_file, encoding='utf-8', sep=';', header=None)
@@ -52,11 +52,17 @@ def insert_keywords_data_MySQL():
     dataframe['CHECKING_2'] = 0
     dataframe.columns = ['KEYWORDS','CHECKING_1','CHECKING_2']
     df = DataFrame(dataframe, columns= ['KEYWORDS','CHECKING_1','CHECKING_2'])
+    def encoding(x):
+        #return urllib.parse.quote_plus(x)
+        return x.replace("'", "\'")
+    df['KEYWORDS'] = df['KEYWORDS'].apply(encoding)
+    #pd.set_option("display.max_rows", None, "display.max_columns", None)
+    #print(df)
     # Create SQLAlchemy engine to connect to MySQL Database
     engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}"
                     .format(host=hostname, db=dbname, user=uname, pw=pwd))
     # Convert dataframe to sql table                                   
-    df.to_sql('KEYWORDS_LIST', engine, index=False)
+    df.to_sql('KEYWORDS_LIST', engine, index=True)
 
 def get_proxy_MySQL():
     connection = pymysql.connect(host=hostname,
@@ -123,18 +129,21 @@ def rehab_keyword_MySQL(keyword):
     connection.close()
 
 def get_remaining_keywords_MySQL():
-    connection = pymysql.connect(host=hostname,
-                            user=uname,
-                            password=pwd,
-                            database=dbname,
-                            charset='utf8mb4',
-                            cursorclass=pymysql.cursors.DictCursor)
-    cursor = connection.cursor()
-    data = pd.read_sql_query("SELECT KEYWORDS FROM KEYWORDS_LIST WHERE CHECKING_1 <> 1 AND CHECKING_2 <> 1;",connection)
-    remaining_keyword_list = data['KEYWORDS'].tolist()
-    remaining_keyword_n = len(remaining_keyword_list)
-    connection.close()
-    return remaining_keyword_n
+    try:
+        connection = pymysql.connect(host=hostname,
+                                user=uname,
+                                password=pwd,
+                                database=dbname,
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+        cursor = connection.cursor()
+        data = pd.read_sql_query("SELECT KEYWORDS FROM KEYWORDS_LIST WHERE CHECKING_1 <> 1 AND CHECKING_2 <> 1;",connection)
+        remaining_keyword_list = data['KEYWORDS'].tolist()
+        remaining_keyword_n = len(remaining_keyword_list)
+        connection.close()
+        return remaining_keyword_n
+    except:
+        remaining_keyword_n = 0
 
 
 

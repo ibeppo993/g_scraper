@@ -137,16 +137,15 @@ def get_remaining_keywords():
             data = pd.read_sql_query("SELECT KEYWORDS FROM KEYWORDS_LIST WHERE CHECKING_1 <> 1 AND STATUS_CODE = 0;",conn)
             remaining_keyword_list = data['KEYWORDS'].tolist()
             remaining_keyword_n = len(remaining_keyword_list)
-            #print('###############################')
             #print(remaining_keyword_n)
             conn.close()
+            return remaining_keyword_n
             
         except IndexError:
             conn.close()
-            #print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             remaining_keyword_n = 0
+            return remaining_keyword_n
 
-        return remaining_keyword_n
 
 
 def get_keyword():
