@@ -26,6 +26,12 @@ remaining_keyword_n = get_remaining_keywords()
 
 proxy_user = 'ibeppo993'
 proxy_pass = 'Ta802Ta802'
+
+# domain = 'www.google.com'
+# gl = 'us'
+# hl = 'EN'
+# uule = 'w+CAIQICINVW5pdGVkIFN0YXRlcw'
+
 domain = 'www.google.it'
 gl = 'it'
 hl = 'IT'
@@ -51,14 +57,15 @@ while remaining_keyword_n > 0:
     option.add_argument("--disable-infobars")
     option.add_argument("--disable-popup-blocking")
     option.add_argument('--disable-blink-features=AutomationControlled')
+    print(proxy)
     option.add_argument(f'proxy-server={proxy}')
     option.add_argument('--no-first-run --no-service-autorun --password-store=basic')
     option.add_experimental_option("excludeSwitches", ["enable-automation"])
     option.add_argument('--disable-blink-features=AutomationControlled')
     option.add_experimental_option('useAutomationExtension', False)
     
-    driver = webdriver.Remote(f'{docker_url}wd/hub',options = option)
-    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
+    #driver = webdriver.Remote(f'{docker_url}wd/hub',options = option)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=option)
     
     # stealth(driver,
     #         languages=["en-US", "en"],
@@ -77,10 +84,14 @@ while remaining_keyword_n > 0:
     # })
     # Go to the Google home page
     url = get_url_to_scrape(keyword, domain, uule, hl, gl)
+    #driver.get('https://www.whatismyip.com/it/')
+    #time.sleep(1)
     #driver.get('https://bot.sannysoft.com/')
-    #time.sleep(5)
+    #time.sleep(1)
     driver.get(url)
-    time.sleep(3)
+    time.sleep(2)
+    #print('pausa 20 secondi per delay no proxy')
+    #time.sleep(1)
     random_number = random.choice([1,2])
     if random_number == 1:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -143,3 +154,6 @@ while remaining_keyword_n > 0:
         print(remaining_keyword_n)
         if int(remaining_keyword_n) % 100 == 0:
             log_telegram = telegram_bot_sendtext(f"{def_date_time}\nkw mancanti {remaining_keyword_n}\n{proxy}\n{keyword}\n{docker_url}\nRichiesta Eseguite")
+
+
+
